@@ -1,0 +1,38 @@
+service:
+  enabled: true
+  type: ClusterIP
+  name: py-backend
+  port: 8000
+  listenPort: 8000
+
+persistence:
+  enabled: true
+  size: 256M
+  storageClass: "" #"local-path"
+  accessMode: ReadWriteOnce
+
+ingress:
+  enabled: true
+  className: traefik
+  host: py-be.zone.internal
+  serviceName: py-py-backend
+  tls:
+  - secretName: py-backend-tls
+    hosts:
+    - py-be.zone.internal
+  annotations:
+    kubernetes.io/ingress.className: traefik
+    cert-manager.io/cluster-issuer: local-ca
+    external-dns.alpha.kubernetes.io/hostname: py-be.zone.internal
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+
+image:
+  repository: pybe
+  #tag: 5efdb11 #latest
+resources:
+  requests:
+    cpu: 100m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
