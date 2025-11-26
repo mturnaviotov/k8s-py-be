@@ -21,4 +21,7 @@ urlpatterns = [
     path('', include('twi.urls')),
     path('twi/', include("twi.urls")),
     path('admin/', admin.site.urls),
+    # prometheus
+    path('', include('django_prometheus.urls')),
+    path('metrics/', include('django_prometheus.urls')),
 ]

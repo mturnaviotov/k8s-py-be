@@ -51,6 +51,7 @@ HttpRequest.get_host = get_host_patched
 
 INSTALLED_APPS = [
     'twi.apps.TwiConfig',
+    'django_prometheus',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
