@@ -15,12 +15,12 @@ services:
     ports:
       - "5432:5432"
 
-  web:
-    build: .
-    container_name: twi_web
+  backend:
+    build: backend/
+    container_name: twi_backend
     #command: echo 'test' && python manage.py runserver "0.0.0.0:8000"
-    volumes:
-    - .:/app
+    #volumes:
+    #- .:/app
     ports:
       - "8000:8000"
     environment:
