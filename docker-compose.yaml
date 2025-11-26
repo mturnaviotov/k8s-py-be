@@ -1,0 +1,35 @@
+# docker-compose.yml
+# version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: twi_db
+    restart: always
+    environment:
+      POSTGRES_DB: djangodb
+      POSTGRES_USER: django
+      POSTGRES_PASSWORD: 12345
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    container_name: twi_web
+    #command: echo 'test' && python manage.py runserver "0.0.0.0:8000"
+    volumes:
+    - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: djangodb
+      POSTGRES_USER: django
+      POSTGRES_PASSWORD: 12345
+    depends_on:
+    - db
+
+volumes:
+  postgres_data:
