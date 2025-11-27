@@ -1,9 +1,9 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ include "backend.fullname" . }}-init-job"
+  name: "{{ .Chart.Name }}-init-job"
   labels:
-  {{- include "backend.labels" . | nindent 4 }}
+  {{- include "labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": "post-install,post-upgrade"
     "helm.sh/hook-delete-policy": "hook-succeeded"
@@ -14,7 +14,7 @@ spec:
       volumes:
         - name: init-script-volume
           configMap:
-            name: "{{ include "backend.fullname" . }}-init-script"
+            name: "{{ .Chart.Name }}-init-script"
             defaultMode: 0755
       containers:
         - name: init-job-container

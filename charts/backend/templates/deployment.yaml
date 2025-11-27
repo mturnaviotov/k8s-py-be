@@ -1,9 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "backend.fullname" . }}
+  name: {{ .Chart.Name | quote }}
   labels:
-    {{- include "backend.labels" . | nindent 4 }}
+    app: {{ .Release.Name }}
+    {{- include "labels" . | nindent 4 }}
   annotations:
     alloy.io/scrape: "true"
     loki.io/logs: "true"
@@ -14,11 +15,12 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "backend.fullname" . }}
+      app: {{ .Chart.Name | quote }}
   template:
     metadata:
       labels:
-      {{- include "backend.labels" . | nindent 8 }}
+        app: {{ .Chart.Name | quote }}
+        {{- include "labels" . | nindent 8 }}
       annotations:
         alloy.io/scrape: "true"
         loki.io/logs: "true"
@@ -30,19 +32,19 @@ spec:
         {{- if .Values.persistence.enabled }}
         - name: data
           persistentVolumeClaim:
-            claimName: {{ include "backend.fullname" . }}
+            claimName: "{{ .Chart.Name }}"
         {{- else }}
         - name: data
           emptyDir: {}
         {{- end }}
         - name: init-script
           configMap:
-            name: {{ .Release.Name }}-init-script
+            name: "{{ .Chart.Name }}-init-script"
             defaultMode: 0755
       #securityContext:
       #  fsGroup: 200
       containers:
-        - name: backend
+        - name: {{ .Chart.Name | quote }}
           image:  pybe #"{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           ports:

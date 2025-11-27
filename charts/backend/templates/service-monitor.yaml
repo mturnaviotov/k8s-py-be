@@ -2,21 +2,22 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: py-backend
+  name: {{ .Chart.Name | quote }}
   labels:
     release: kps 
-    {{- include "backend.labels" . | nindent 4 }}
+    app: {{ .Release.Name }}
+    {{- include "labels" . | nindent 4 }}
 spec:
-  jobLabel: py
+  jobLabel: {{ .Release.Name }}
   selector:
     matchLabels:
-      app.kubernetes.io/component: "backend"
-      app.kubernetes.io/instance: "py"
-      app: "py-py-backend"
+      app.kubernetes.io/component: {{ .Chart.Name | quote }}
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+      app: {{ .Release.Name | quote }}
   endpoints:
-  - port: http # <--- Ім'я порту, визначене у Service
+  - port: http
     path: /metrics
     scheme: http
-    targetPort: 8000
+    targetPort: {{ .Values.service.listenPort | default "8000" }}
     interval: 15s
 {{- end }}
