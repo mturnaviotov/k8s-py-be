@@ -32,7 +32,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ .Values.ingress.serviceName | default .Values.service.name }}
+                name: {{ .Chart.Name | default "backend" }}
                 port:
                   number: {{ .Values.ingress.port | default 8000 }}
 {{- end }}
