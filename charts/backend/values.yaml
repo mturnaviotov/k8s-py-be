@@ -5,6 +5,10 @@ service:
   port: 8000
   listenPort: 8000
 
+metrics:
+  enabled: true
+  release: kps #we should know this for service monitoring discovery
+
 persistence:
   enabled: true
   size: 256M
@@ -28,7 +32,7 @@ ingress:
 
 image:
   repository: pybe
-  #tag: 5efdb11 #latest
+  #tag: latest
 resources:
   requests:
     cpu: 100m

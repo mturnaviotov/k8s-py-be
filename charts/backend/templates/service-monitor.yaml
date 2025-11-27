@@ -1,0 +1,22 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: py-backend
+  labels:
+    release: kps 
+    {{- include "backend.labels" . | nindent 4 }}
+spec:
+  jobLabel: py
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: "backend"
+      app.kubernetes.io/instance: "py"
+      app: "py-py-backend"
+  endpoints:
+  - port: http # <--- Ім'я порту, визначене у Service
+    path: /metrics
+    scheme: http
+    targetPort: 8000
+    interval: 15s
+{{- end }}
