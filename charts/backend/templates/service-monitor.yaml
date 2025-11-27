@@ -2,18 +2,18 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ .Chart.Name | quote }}
+  name: "{{ .Release.Name }}-{{ .Chart.Name }}"
   labels:
-    release: kps 
-    app: {{ .Release.Name }}
+    release: kps
     {{- include "labels" . | nindent 4 }}
 spec:
-  jobLabel: {{ .Release.Name }}
+  jobLabel: "{{ .Release.Name }}-{{ .Chart.Name }}"
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
   selector:
     matchLabels:
-      app.kubernetes.io/component: {{ .Chart.Name | quote }}
-      app.kubernetes.io/instance: {{ .Release.Name | quote }}
-      app: {{ .Release.Name | quote }}
+    {{- include "labels" . | nindent 6 }}
   endpoints:
   - port: http
     path: /metrics

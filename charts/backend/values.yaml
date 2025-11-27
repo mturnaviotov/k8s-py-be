@@ -30,8 +30,9 @@ ingress:
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
 
 image:
-  repository: pybe
-  #tag: latest
+  repository: foxmuldercp/django-backend
+  tag: latest
+
 resources:
   requests:
     cpu: 100m

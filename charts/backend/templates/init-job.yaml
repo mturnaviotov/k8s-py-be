@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ .Chart.Name }}-init-job"
+  name: "{{ .Release.Name }}-{{ .Chart.Name }}-init-job"
   labels:
   {{- include "labels" . | nindent 4 }}
   annotations:
@@ -14,7 +14,7 @@ spec:
       volumes:
         - name: init-script-volume
           configMap:
-            name: "{{ .Chart.Name }}-init-script"
+            name: "{{ .Release.Name }}-{{ .Chart.Name }}-init-script"
             defaultMode: 0755
       containers:
         - name: init-job-container

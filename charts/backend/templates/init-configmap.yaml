@@ -1,9 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Chart.Name }}-init-script
+  name: "{{ .Release.Name }}-{{ .Chart.Name }}-init-script"
   labels:
-    app: {{ .Release.Name }}
     {{- include "labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": "pre-install,pre-upgrade"
@@ -13,10 +12,11 @@ data:
   init.sh: |
     #!/bin/sh
     echo Wait for twi app to be ready
-    {{- $svcName := default .Chart.Name  }}
+    {{- $AppName := default .Chart.Name  }}
+    {{- $ReleaseName := default .Release.Name  }}
     {{- $svcNS := default .Release.Namespace }}
     {{- $svcPort := int (default 8000 .Values.service.port) }}
-    {{- $svcFQDN := printf "%s.%s.svc.cluster.local:%d" $svcName $svcNS $svcPort }}
+    {{- $svcFQDN := printf "%s-%s.%s.svc.cluster.local:%d" $ReleaseName $AppName $svcNS $svcPort }}
     until curl -sf http://{{ $svcFQDN }}/twi/; do
       echo "{\"level\":\"info\", \"message\":\"Waiting for {{ .Release.Name }} to be ready\"}"
       sleep 10

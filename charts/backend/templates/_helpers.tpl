@@ -1,5 +1,6 @@
 {{- /* helpers for backend chart */ -}}
 {{- define "labels" -}}
+app: "{{ .Release.Name }}-{{ .Chart.Name }}"
 app.kubernetes.io/name: {{ .Chart.Name }}
 helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 app.kubernetes.io/instance: {{ .Release.Name }}

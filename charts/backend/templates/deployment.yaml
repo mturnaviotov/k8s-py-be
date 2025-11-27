@@ -1,9 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name | quote }}
+  name: "{{ .Release.Name }}-{{ .Chart.Name }}"
   labels:
-    app: {{ .Release.Name }}
     {{- include "labels" . | nindent 4 }}
   annotations:
     alloy.io/scrape: "true"
@@ -15,11 +14,10 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Chart.Name | quote }}
+    {{- include "labels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name | quote }}
         {{- include "labels" . | nindent 8 }}
       annotations:
         alloy.io/scrape: "true"
@@ -32,20 +30,20 @@ spec:
         {{- if .Values.persistence.enabled }}
         - name: data
           persistentVolumeClaim:
-            claimName: "{{ .Chart.Name }}"
+            claimName: "{{ .Release.Name }}-{{ .Chart.Name }}"
         {{- else }}
         - name: data
           emptyDir: {}
         {{- end }}
         - name: init-script
           configMap:
-            name: "{{ .Chart.Name }}-init-script"
+            name: "{{ .Release.Name }}-{{ .Chart.Name }}-init-script"
             defaultMode: 0755
       #securityContext:
       #  fsGroup: 200
       containers:
         - name: {{ .Chart.Name | quote }}
-          image:  pybe #"{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           ports:
             - containerPort: {{ .Values.service.listenPort | default "8000" }}
