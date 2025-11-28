@@ -18,7 +18,7 @@ ingress:
   enabled: true
   className: traefik
   host: py-be.zone.internal
-  serviceName: py-py-backend
+  # serviceName: py-backend
   tls:
   - secretName: py-backend-tls
     hosts:

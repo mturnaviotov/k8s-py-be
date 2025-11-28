@@ -14,11 +14,13 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-    {{- include "labels" . | nindent 6 }}
+      app.kubernetes.io/instance: {{ .Release.Name  | quote }}
+      app.kubernetes.io/name: {{ .Chart.Name | quote }}
   template:
     metadata:
       labels:
-        {{- include "labels" . | nindent 8 }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        app.kubernetes.io/name: {{ .Chart.Name | quote }}
       annotations:
         alloy.io/scrape: "true"
         loki.io/logs: "true"
