@@ -1,0 +1,76 @@
+backend:
+  enabled: true
+  service:
+    type: ClusterIP
+    name: py-backend
+    port: 8000
+    listenPort: 8000
+
+  persistence:
+    enabled: true
+    size: 256M
+    storageClass: "" #"local-path"
+    accessMode: ReadWriteOnce
+
+  ingress:
+    enabled: true
+    className: traefik
+    host: py-backend.zone.internal
+    serviceName: py-backend
+    tls:
+    - secretName: py-backend-tls
+      hosts:
+      - py-backend.zone.internal
+    annotations:
+      kubernetes.io/ingress.className: traefik
+      cert-manager.io/cluster-issuer: local-ca
+      external-dns.alpha.kubernetes.io/hostname: py-backend.zone.internal
+      traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+
+  image:
+    repository: foxmuldercp/django-backend
+    tag: latest
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+frontend:
+  service:
+    port: 80
+
+  backend:
+    host: py-backend.py.svc.cluster.local
+    port: 8000
+
+  ingress:
+    enabled: true
+    className: traefik
+    host: py.zone.internal
+    serviceName: py-frontend
+    tls:
+    - secretName: py-frontend-tls
+      hosts:
+      - py.zone.internal
+    annotations:
+      kubernetes.io/ingress.className: traefik
+      cert-manager.io/cluster-issuer: local-ca
+      external-dns.alpha.kubernetes.io/hostname: py.zone.internal
+      traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+      #traefik.ingress.kubernetes.io/router.middlewares: "default-https-redirect@kubernetescrd"
+      #traefik.ingress.kubernetes.io/router.tls: "true"
+      #traefik.ingress.kubernetes.io/router.priority: "10"
+
+  image:
+    repository: foxmuldercp/django-frontend
+    tag: latest
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi

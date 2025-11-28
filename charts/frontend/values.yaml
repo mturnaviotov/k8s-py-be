@@ -1,0 +1,35 @@
+service:
+  port: 80
+
+backend: {}
+  #host: py-backend.py.svc.cluster.local
+  #port: 8000
+
+ingress:
+  enabled: true
+  className: traefik
+  host: py.py.svc.cluster.local
+  serviceName: py-frontend
+  tls:
+  - secretName: py-frontend-tls
+    hosts:
+    - py.py.svc.cluster.local
+  annotations:
+    kubernetes.io/ingress.className: traefik
+    cert-manager.io/cluster-issuer: local-ca
+    external-dns.alpha.kubernetes.io/hostname: py.py.svc.cluster.local
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    #traefik.ingress.kubernetes.io/router.middlewares: "default-https-redirect@kubernetescrd"
+    #traefik.ingress.kubernetes.io/router.tls: "true"
+    #traefik.ingress.kubernetes.io/router.priority: "10"
+
+image:
+  repository: foxmuldercp/go-todo-frontend
+  tag: latest
+resources:
+  requests:
+    cpu: "100m"
+    memory: "0.2G"
+  limits:
+    cpu: "200m"
+    memory: "0.5G"

@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Release.Name }}-{{ .Chart.Name }}-nginx-vhost"
+  labels:
+  {{- include "labels" . | nindent 4 }}
+data:
+  default.conf: |
+    {{- $AppName := default "backend" }}
+    {{- $defaultPort := "8000" }}
+    {{- $svcPort := int (default $defaultPort .Values.backend.port) }}
+
+    {{- $ReleaseName := .Release.Name }}
+    {{- $svcNS := default .Release.Namespace }}
+
+    {{- $defaultHost := printf "%s-%s.%s.svc.cluster.local" $ReleaseName $AppName $svcNS }}
+    {{- $svcFQDN := default $defaultHost .Values.backend.host }}
+    upstream backend {
+      server {{ $svcFQDN }}:{{ $svcPort }};
+    }
+
+    server {
+      listen 80;
+      server_name _;
+
+      root /usr/share/nginx/html;
+      index index.html;
+
+      location / {
+        try_files $uri $uri/ /index.html;
+      }
+
+      location /twi {
+      {{ if eq $svcPort 443 }}
+        proxy_pass https://backend;
+        proxy_ssl_verify   off;
+        proxy_ssl_server_name on;
+      {{ else }}
+        proxy_pass http://backend;
+      {{end }}
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+      }
+
+      error_page 500 502 503 504 /50x.html;
+      location = /50x.html {
+        internal;
+        root /usr/share/nginx/html;
+      }
+    }

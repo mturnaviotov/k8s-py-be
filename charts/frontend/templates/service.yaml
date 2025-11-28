@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Release.Name }}-{{ .Chart.Name }}"
+  labels:
+  {{- include "labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app: "{{ .Release.Name }}-{{ .Chart.Name }}"
+    app.kubernetes.io/app: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: {{ .Chart.Name }}
+  ports:
+    - port: {{ .Values.service.port | default "80" }}
+      targetPort: {{ .Values.service.port | default "80" }}
+      protocol: TCP
+      name: http
